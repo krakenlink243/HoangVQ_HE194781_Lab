@@ -5,7 +5,6 @@ class CoreWidgetsDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(title: const Text("Exercise 1 – Core Widgets"),),
       body: ListView(
@@ -21,15 +20,15 @@ class CoreWidgetsDemo extends StatelessWidget {
             height: 200,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stack) =>
-            const Icon(Icons.broken_image, size: 64), // hiện icon này nếu tải ảnh lỗi
+            const Icon(Icons.broken_image, size: 64),
           ),
           const SizedBox(height: 16),
           const Card(
             child: ListTile(
-              leading: Icon(Icons.star, color: Colors.amber), // icon bên trái
-              title: Text('Inception'),                        // dòng chính
-              subtitle: Text('Sci-Fi • 2010'),                 // dòng phụ
-              trailing: Icon(Icons.chevron_right),             // icon bên phải
+              leading: Icon(Icons.star, color: Colors.amber),
+              title: Text('Inception'),
+              subtitle: Text('Sci-Fi • 2010'),
+              trailing: Icon(Icons.chevron_right),
             ),
           ),
         ],

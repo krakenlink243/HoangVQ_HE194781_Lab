@@ -1,0 +1,10 @@
+[
+  { "id": 1, "name": "Wireless Mouse", "category": "Accessories", "price": 199000 },
+  { "id": 2, "name": "Mechanical Keyboard", "category": "Accessories", "price": 1250000 },
+  { "id": 3, "name": "27\" 4K Monitor", "category": "Display", "price": 6490000 },
+  { "id": 4, "name": "USB-C Hub 7-in-1", "category": "Accessories", "price": 450000 },
+  { "id": 5, "name": "Noise-cancelling Headphones", "category": "Audio", "price": 3290000 },
+  { "id": 6, "name": "Portable SSD 1TB", "category": "Storage", "price": 2190000 },
+  { "id": 7, "name": "Webcam Full HD", "category": "Video", "price": 790000 },
+  { "id": 8, "name": "Laptop Stand", "category": "Accessories", "price": 350000 }
+]

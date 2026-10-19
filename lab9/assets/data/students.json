@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Nguyen Van An", "major": "Software Engineering", "gpa": 3.4 },
+  { "id": 2, "name": "Tran Thi Binh", "major": "Artificial Intelligence", "gpa": 3.8 },
+  { "id": 3, "name": "Le Hoang Cuong", "major": "Information Assurance", "gpa": 2.9 },
+  { "id": 4, "name": "Pham Minh Duc", "major": "Software Engineering", "gpa": 3.1 },
+  { "id": 5, "name": "Vo Thu Ha", "major": "Digital Art & Design", "gpa": 3.6 }
+]
