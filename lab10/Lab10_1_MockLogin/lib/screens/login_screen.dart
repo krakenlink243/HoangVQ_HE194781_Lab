@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/mock_auth_service.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -10,8 +12,43 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  void _validateInput() {
-    _formKey.currentState!.validate();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _authService = MockAuthService();
+  bool _isLoading = false;
+  String? _error;
+  String? _token;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (_isLoading) return;
+    setState(() {
+      _error = null;
+      _token = null;
+    });
+    if (!_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _isLoading = true);
+
+    try {
+      final token = await _authService.login(
+        _emailController.text,
+        _passwordController.text,
+      );
+      if (!mounted) return;
+      setState(() => _token = token);
+    } on MockAuthException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -43,6 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 28),
                     TextFormField(
+                      controller: _emailController,
+                      enabled: !_isLoading,
                       validator: (value) {
                         final email = value?.trim() ?? '';
                         if (email.isEmpty) return 'Vui lòng nhập email.';
@@ -62,6 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      controller: _passwordController,
+                      enabled: !_isLoading,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Vui lòng nhập mật khẩu.';
@@ -71,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                         return null;
                       },
-                      onFieldSubmitted: (_) => _validateInput(),
+                      onFieldSubmitted: (_) => _login(),
                       obscureText: true,
                       autocorrect: false,
                       enableSuggestions: false,
@@ -83,12 +124,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     FilledButton(
-                      onPressed: _validateInput,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        child: Text('Đăng nhập'),
+                      onPressed: _isLoading ? null : _login,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Đăng nhập'),
                       ),
                     ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        _error!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ],
+                    if (_token != null) ...[
+                      const SizedBox(height: 16),
+                      const Text('Đăng nhập thành công!'),
+                      const SizedBox(height: 8),
+                      SelectableText(_token!),
+                    ],
                   ],
                 ),
               ),
