@@ -8,11 +8,13 @@ class AuthService {
   final http.Client _client;
 
   Future<http.Response> login(String username, String password) {
-    return _client.post(
-      Uri.parse('https://dummyjson.com/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username.trim(), 'password': password}),
-    );
+    return _client
+        .post(
+          Uri.parse('https://dummyjson.com/auth/login'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'username': username.trim(), 'password': password}),
+        )
+        .timeout(const Duration(seconds: 15));
   }
 
   String parseToken(String responseBody) {
@@ -25,6 +27,19 @@ class AuthService {
       throw const FormatException('Phản hồi không chứa accessToken hợp lệ.');
     }
     return token;
+  }
+
+  String errorMessage(http.Response response) {
+    if (response.statusCode == 400 || response.statusCode == 401) {
+      return 'Username hoặc mật khẩu không đúng.';
+    }
+    if (response.statusCode == 429) {
+      return 'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+    }
+    if (response.statusCode >= 500) {
+      return 'Server đang gặp sự cố. Vui lòng thử lại sau.';
+    }
+    return 'Đăng nhập thất bại (HTTP ${response.statusCode}). Vui lòng thử lại.';
   }
 
   void dispose() => _client.close();

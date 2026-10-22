@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.authService});
+
+  final AuthService? authService;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -12,8 +17,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
-  String? _response;
+  late final _authService = widget.authService ?? AuthService();
+  String? _error;
+  bool _isLoading = false;
   String? _token;
 
   @override
@@ -25,10 +31,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    if (_isLoading) return;
     setState(() {
-      _response = null;
+      _error = null;
       _token = null;
     });
+    if (_usernameController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
+      setState(() => _error = 'Vui lòng nhập username và mật khẩu.');
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    setState(() => _isLoading = true);
     try {
       final response = await _authService.login(
         _usernameController.text,
@@ -40,17 +54,29 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _token = token);
         return;
       }
-      setState(
-        () => _response = 'HTTP ${response.statusCode}\n${response.body}',
-      );
-    } on FormatException catch (error) {
-      if (!mounted) return;
-      setState(() => _response = error.message);
+      setState(() => _error = _authService.errorMessage(response));
+    } on TimeoutException {
+      if (mounted) {
+        setState(() => _error = 'Kết nối quá thời gian. Vui lòng thử lại.');
+      }
+    } on http.ClientException {
+      if (mounted) {
+        setState(
+          () => _error = 'Không thể kết nối server. Kiểm tra kết nối mạng.',
+        );
+      }
+    } on FormatException {
+      if (mounted) {
+        setState(
+          () => _error = 'Phản hồi đăng nhập không hợp lệ. Vui lòng thử lại.',
+        );
+      }
     } catch (_) {
-      if (!mounted) return;
-      setState(
-        () => _response = 'Không gửi được request. Kiểm tra kết nối mạng.',
-      );
+      if (mounted) {
+        setState(() => _error = 'Đã xảy ra lỗi. Vui lòng thử lại.');
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -76,6 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 24),
                   TextField(
                     controller: _usernameController,
+                    enabled: !_isLoading,
                     autocorrect: false,
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Username'),
@@ -83,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: _passwordController,
+                    enabled: !_isLoading,
                     obscureText: true,
                     autocorrect: false,
                     enableSuggestions: false,
@@ -92,19 +120,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
-                    onPressed: _login,
-                    child: const Text('Đăng nhập'),
+                    onPressed: _isLoading ? null : _login,
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Đăng nhập'),
                   ),
                   const SizedBox(height: 16),
                   const Text(
                     'Tài khoản mẫu: emilys / emilyspass',
                     textAlign: TextAlign.center,
                   ),
-                  if (_response != null) ...[
+                  if (_error != null) ...[
                     const SizedBox(height: 24),
-                    const Text('Phản hồi từ server:'),
-                    const SizedBox(height: 8),
-                    SelectableText(_response!),
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        _error!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
                   ],
                   if (_token != null) ...[
                     const SizedBox(height: 24),
