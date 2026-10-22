@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  lab10_2_real_api_login:
+    path: Lab10_2_RealApiLogin
   lab10_1_mock_login:
     path: Lab10_1_MockLogin
   flutter:
