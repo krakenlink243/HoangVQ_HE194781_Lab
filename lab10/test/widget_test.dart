@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lab10/main.dart';
 
 void main() {
-  testWidgets('Main displays the step 4 login screen', (tester) async {
+  testWidgets('Main displays the step 5 login screen', (tester) async {
     await tester.pumpWidget(const MyApp());
 
     expect(find.widgetWithText(TextFormField, 'Email'), findsOneWidget);
@@ -44,7 +44,13 @@ void main() {
     expect(find.textContaining('mock-token-'), findsOneWidget);
     expect(find.text('Email không hợp lệ.'), findsNothing);
     expect(find.text('Mật khẩu cần ít nhất 6 ký tự.'), findsNothing);
-    expect(fields, findsNWidgets(2));
+    expect(fields, findsNothing);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Xin chào, student@example.com'), findsOneWidget);
+    expect(
+      tester.state<NavigatorState>(find.byType(Navigator)).canPop(),
+      isFalse,
+    );
   });
 
   testWidgets('Wrong credentials show an error and allow retry', (
@@ -60,6 +66,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Email hoặc mật khẩu không đúng.'), findsOneWidget);
     expect(find.textContaining('mock-token-'), findsNothing);
+    expect(find.text('Home'), findsNothing);
+    expect(fields, findsNWidgets(2));
 
     await tester.enterText(fields.at(1), '123456');
     await tester.tap(find.byType(FilledButton));

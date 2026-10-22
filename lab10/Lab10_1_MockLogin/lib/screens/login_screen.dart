@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/mock_auth_service.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _authService = MockAuthService();
   bool _isLoading = false;
   String? _error;
-  String? _token;
 
   @override
   void dispose() {
@@ -30,19 +30,20 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_isLoading) return;
     setState(() {
       _error = null;
-      _token = null;
     });
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
 
+    final email = _emailController.text.trim().toLowerCase();
     try {
-      final token = await _authService.login(
-        _emailController.text,
-        _passwordController.text,
-      );
+      final token = await _authService.login(email, _passwordController.text);
       if (!mounted) return;
-      setState(() => _token = token);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => HomeScreen(email: email, token: token),
+        ),
+      );
     } on MockAuthException catch (error) {
       if (!mounted) return;
       setState(() => _error = error.message);
@@ -146,12 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Theme.of(context).colorScheme.error,
                         ),
                       ),
-                    ],
-                    if (_token != null) ...[
-                      const SizedBox(height: 16),
-                      const Text('Đăng nhập thành công!'),
-                      const SizedBox(height: 8),
-                      SelectableText(_token!),
                     ],
                   ],
                 ),
