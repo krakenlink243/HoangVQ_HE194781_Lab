@@ -4,6 +4,15 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class NotificationService {
   final _plugin = FlutterLocalNotificationsPlugin();
 
+  Future<bool> requestPermission() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    return await android?.requestNotificationsPermission() ?? false;
+  }
+
   Future<bool> initialize() async {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
 

@@ -30,6 +30,31 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   final _service = NotificationService();
   late final Future<bool> _initialization;
+  bool _isRequestingPermission = false;
+  String? _permissionMessage;
+
+  Future<void> _requestPermission() async {
+    if (_isRequestingPermission) return;
+    setState(() {
+      _isRequestingPermission = true;
+      _permissionMessage = null;
+    });
+    try {
+      final granted = await _service.requestPermission();
+      if (!mounted) return;
+      setState(() {
+        _permissionMessage = granted ? 'Đã được cấp quyền thông báo.' : 'Chưa được cấp quyền thông báo. Bạn có thể bật quyền trong Cài đặt ứng dụng.';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(
+        () => _permissionMessage =
+            'Không thể xin quyền thông báo. Vui lòng thử lại.',
+      );
+    } finally {
+      if (mounted) setState(() => _isRequestingPermission = false);
+    }
+  }
 
   @override
   void initState() {
@@ -55,7 +80,37 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   : snapshot.data == true
                   ? 'Đã khởi tạo local notifications.'
                   : 'Hãy chạy trên Android để thực hành thông báo.';
-              return Text(message, textAlign: TextAlign.center);
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(message, textAlign: TextAlign.center),
+                    if (!snapshot.hasError && snapshot.data == true) ...[
+                      const SizedBox(height: 24),
+                      FilledButton(
+                        onPressed: _isRequestingPermission
+                            ? null
+                            : _requestPermission,
+                        child: Text(
+                          _isRequestingPermission
+                              ? 'Đang xin quyền...'
+                              : 'Xin quyền thông báo',
+                        ),
+                      ),
+                    ],
+                    if (_permissionMessage != null) ...[
+                      const SizedBox(height: 16),
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          _permissionMessage!,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
             },
           ),
         ),
