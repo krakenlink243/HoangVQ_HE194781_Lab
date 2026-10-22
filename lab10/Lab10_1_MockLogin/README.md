@@ -1,13 +1,14 @@
 # Lab10_1_MockLogin
 
-Đã hoàn thành đến step 2 của Lab 10.1:
+Đã hoàn thành đến step 3 của Lab 10.1:
 
 1. Tạo project Flutter.
 2. Tạo giao diện Login gồm email, mật khẩu và nút đăng nhập.
+3. Kiểm tra dữ liệu bằng Flutter Form khi bấm đăng nhập hoặc gửi từ bàn phím.
 
-Có thể nhập email và mật khẩu (được che ký tự). Nút đăng nhập hiện chưa
-xử lý hành động. Các step validation, mock authentication và chuyển Home
-chưa được triển khai.
+Email bắt buộc và phải đúng định dạng. Mật khẩu bắt buộc và cần ít nhất
+6 ký tự. Lỗi hiển thị dưới từng trường. Dữ liệu hợp lệ sẽ không hiển thị lỗi.
+Mock authentication và chuyển Home chưa được triển khai.
 
 ## Chạy ứng dụng
 

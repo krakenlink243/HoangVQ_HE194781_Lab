@@ -1,5 +1,5 @@
 name: lab10_1_mock_login
-description: "Lab 10.1 - Login UI (step 2)."
+description: "Lab 10.1 - Login form validation (step 3)."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
