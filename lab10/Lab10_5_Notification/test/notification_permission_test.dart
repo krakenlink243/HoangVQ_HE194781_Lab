@@ -41,7 +41,7 @@ void main() {
       expect(requests, 1);
       expect(find.text('Đang xin quyền...'), findsOneWidget);
       expect(
-        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+        tester.widget<FilledButton>(find.byType(FilledButton).first).onPressed,
         isNull,
       );
 
@@ -54,7 +54,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+        tester.widget<FilledButton>(find.byType(FilledButton).first).onPressed,
         isNotNull,
       );
     });
@@ -78,7 +78,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      tester.widget<FilledButton>(find.byType(FilledButton).first).onPressed,
       isNotNull,
     );
   });

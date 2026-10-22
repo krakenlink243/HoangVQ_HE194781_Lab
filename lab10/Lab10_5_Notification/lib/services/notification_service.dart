@@ -4,6 +4,33 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class NotificationService {
   final _plugin = FlutterLocalNotificationsPlugin();
 
+  Future<bool> showDemoNotification() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (await android?.areNotificationsEnabled() != true) return false;
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'lab10_notifications',
+        'Lab 10 Notifications',
+        channelDescription: 'Thông báo của Lab 10.5',
+        icon: 'ic_notification',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+    );
+    await _plugin.show(
+      id: 1,
+      title: 'Lab 10.5',
+      body: 'Đây là thông báo demo từ ứng dụng Flutter.',
+      notificationDetails: details,
+    );
+    return true;
+  }
+
   Future<bool> requestPermission() async {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
     final android = _plugin
