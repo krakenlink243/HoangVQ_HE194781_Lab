@@ -14,4 +14,12 @@ class SessionService {
       throw StateError('Không thể lưu phiên đăng nhập.');
     }
   }
+
+  Future<void> clearToken() async {
+    final preferences = await SharedPreferences.getInstance();
+    final removed = await preferences.remove('token');
+    if (!removed) {
+      throw StateError('Không thể xoá phiên đăng nhập.');
+    }
+  }
 }

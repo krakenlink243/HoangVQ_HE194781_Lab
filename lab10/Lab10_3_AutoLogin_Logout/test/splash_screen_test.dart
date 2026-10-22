@@ -47,4 +47,37 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(find.text('persisted-token'), findsOneWidget);
   });
+
+  testWidgets('Logout clears token and requires login after restart', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'token': 'saved-access-token',
+      'theme': 'teal',
+    });
+    await tester.pumpWidget(const MainApp());
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeScreen), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Đăng xuất'));
+    await tester.pumpAndSettle();
+
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getString('token'), isNull);
+    expect(preferences.getString('theme'), 'teal');
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.byType(HomeScreen), findsNothing);
+    expect(
+      tester.state<NavigatorState>(find.byType(Navigator)).canPop(),
+      isFalse,
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(const MainApp());
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.byType(HomeScreen), findsNothing);
+  });
 }

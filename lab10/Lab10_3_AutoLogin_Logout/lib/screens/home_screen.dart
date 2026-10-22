@@ -1,10 +1,41 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../services/session_service.dart';
+import 'login_screen.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.username, required this.token});
 
   final String? username;
   final String token;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _sessionService = SessionService();
+  bool _isLoggingOut = false;
+
+  Future<void> _logout() async {
+    if (_isLoggingOut) return;
+    setState(() => _isLoggingOut = true);
+    try {
+      await _sessionService.clearToken();
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+        (_) => false,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không thể đăng xuất. Vui lòng thử lại.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoggingOut = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +60,22 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  username == null
+                  widget.username == null
                       ? 'Chào mừng trở lại!'
-                      : 'Xin chào, $username',
+                      : 'Xin chào, ${widget.username}',
                 ),
                 const SizedBox(height: 24),
                 const Text('Access token:'),
                 const SizedBox(height: 8),
-                SelectableText(token, textAlign: TextAlign.center),
+                SelectableText(widget.token, textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: _isLoggingOut ? null : _logout,
+                  icon: const Icon(Icons.logout),
+                  label: Text(
+                    _isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất',
+                  ),
+                ),
               ],
             ),
           ),
