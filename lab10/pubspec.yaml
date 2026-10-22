@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  lab10_5_notification:
+    path: Lab10_5_Notification
   lab10_3_auto_login_logout:
     path: Lab10_3_AutoLogin_Logout
   lab10_2_real_api_login:
