@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../services/auth_service.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, this.authService});
@@ -20,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   late final _authService = widget.authService ?? AuthService();
   String? _error;
   bool _isLoading = false;
-  String? _token;
 
   @override
   void dispose() {
@@ -34,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_isLoading) return;
     setState(() {
       _error = null;
-      _token = null;
     });
     if (_usernameController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
@@ -43,15 +42,20 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
+    final username = _usernameController.text.trim();
     try {
       final response = await _authService.login(
-        _usernameController.text,
+        username,
         _passwordController.text,
       );
       if (!mounted) return;
       if (response.statusCode == 200) {
         final token = _authService.parseToken(response.body);
-        setState(() => _token = token);
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (_) => HomeScreen(username: username, token: token),
+          ),
+        );
         return;
       }
       setState(() => _error = _authService.errorMessage(response));
@@ -145,14 +149,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                  ],
-                  if (_token != null) ...[
-                    const SizedBox(height: 24),
-                    const Text('Đăng nhập thành công!'),
-                    const SizedBox(height: 8),
-                    const Text('Access token:'),
-                    const SizedBox(height: 8),
-                    SelectableText(_token!),
                   ],
                 ],
               ),

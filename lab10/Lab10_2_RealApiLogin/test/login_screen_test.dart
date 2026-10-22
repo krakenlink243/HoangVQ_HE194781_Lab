@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:lab10_2_real_api_login/screens/login_screen.dart';
+import 'package:lab10_2_real_api_login/screens/home_screen.dart';
 import 'package:lab10_2_real_api_login/services/auth_service.dart';
 
 void main() {
@@ -52,6 +53,14 @@ void main() {
     expect(find.text('Username hoặc mật khẩu không đúng.'), findsNothing);
     expect(find.text('Đăng nhập thành công!'), findsOneWidget);
     expect(find.text('test-token'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.text('Xin chào, emilys'), findsOneWidget);
+    expect(find.byType(LoginScreen), findsNothing);
+    expect(find.byType(TextField), findsNothing);
+    expect(
+      tester.state<NavigatorState>(find.byType(Navigator)).canPop(),
+      isFalse,
+    );
   });
 
   final cases = <String, Future<http.Response> Function()>{
@@ -81,6 +90,8 @@ void main() {
         isNotNull,
       );
       expect(find.text('Access token:'), findsNothing);
+      expect(find.byType(HomeScreen), findsNothing);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
   }
 }
