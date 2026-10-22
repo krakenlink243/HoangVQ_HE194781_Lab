@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.username, required this.token});
+  const HomeScreen({super.key, this.username, required this.token});
 
-  final String username;
+  final String? username;
   final String token;
 
   @override
@@ -28,7 +28,11 @@ class HomeScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                Text('Xin chào, $username'),
+                Text(
+                  username == null
+                      ? 'Chào mừng trở lại!'
+                      : 'Xin chào, $username',
+                ),
                 const SizedBox(height: 24),
                 const Text('Access token:'),
                 const SizedBox(height: 8),

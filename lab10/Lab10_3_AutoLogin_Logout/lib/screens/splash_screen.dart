@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../services/session_service.dart';
+import 'home_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,18 +15,27 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Timer? _timer;
+  final _sessionService = SessionService();
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer(const Duration(seconds: 1), _openLogin);
+    _timer = Timer(const Duration(seconds: 1), _restoreSession);
   }
 
-  void _openLogin() {
+  Future<void> _restoreSession() async {
+    String? token;
+    try {
+      token = await _sessionService.getToken();
+    } catch (_) {
+      token = null;
+    }
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
-    );
+    final screen = token == null
+        ? const LoginScreen()
+        : HomeScreen(token: token);
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute<void>(builder: (_) => screen));
   }
 
   @override
