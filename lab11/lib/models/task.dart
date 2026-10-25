@@ -4,4 +4,8 @@ class Task {
   final String id;
   String title;
   bool completed;
+
+  void toggle() {
+    completed = !completed;
+  }
 }
