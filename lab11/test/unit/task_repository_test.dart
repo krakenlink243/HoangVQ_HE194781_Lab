@@ -4,8 +4,13 @@ import 'package:lab11/repositories/task_repository.dart';
 
 void main() {
   group('TaskRepository', () {
+    late TaskRepository repository;
+
+    setUp(() {
+      repository = TaskRepository();
+    });
+
     test('addTask adds a task and preserves existing tasks', () {
-      final repository = TaskRepository();
       final existingTask = Task(id: '1', title: 'First task');
       final newTask = Task(id: '2', title: 'Second task');
       repository.addTask(existingTask);
@@ -19,7 +24,6 @@ void main() {
     });
 
     test('deleteTask removes the matching task and preserves other tasks', () {
-      final repository = TaskRepository();
       final taskToDelete = Task(id: '1', title: 'Task to delete');
       final taskToKeep = Task(id: '2', title: 'Task to keep');
       repository.addTask(taskToDelete);
@@ -36,7 +40,6 @@ void main() {
     });
 
     test('updateTask updates by id and preserves other tasks', () {
-      final repository = TaskRepository();
       final originalTask = Task(id: '1', title: 'Original title');
       final otherTask = Task(id: '2', title: 'Other task');
       final updatedTask = Task(

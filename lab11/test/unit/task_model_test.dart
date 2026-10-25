@@ -2,38 +2,44 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lab11/models/task.dart';
 
 void main() {
-  test('Task completed defaults to false', () {
-    final task = Task(id: '1', title: 'Learn Flutter testing');
+  group('Task', () {
+    late Task task;
 
-    final completed = task.completed;
+    setUp(() {
+      task = Task(id: '1', title: 'Learn Flutter testing');
+    });
 
-    expect(completed, isFalse);
-  });
+    test('completed defaults to false', () {
+      final completed = task.completed;
 
-  test('toggle changes completed from false to true', () {
-    final task = Task(id: '1', title: 'Learn Flutter testing');
+      expect(completed, isFalse);
+    });
 
-    task.toggle();
+    test('toggle changes completed from false to true', () {
+      task.toggle();
 
-    expect(task.completed, isTrue);
-  });
+      expect(task.completed, isTrue);
+    });
 
-  test('toggle changes completed from true to false', () {
-    final task = Task(id: '1', title: 'Learn Flutter testing', completed: true);
+    test('toggle changes completed from true to false', () {
+      task.completed = true;
 
-    task.toggle();
+      task.toggle();
 
-    expect(task.completed, isFalse);
-  });
+      expect(task.completed, isFalse);
+    });
 
-  test('toggling twice restores the original completed value', () {
-    final task = Task(id: '1', title: 'Learn Flutter testing');
+    test('toggling twice restores the original completed value', () {
+      final originalCompleted = task.completed;
+      final originalId = task.id;
+      final originalTitle = task.title;
 
-    task.toggle();
-    task.toggle();
+      task.toggle();
+      task.toggle();
 
-    expect(task.completed, isFalse);
-    expect(task.id, '1');
-    expect(task.title, 'Learn Flutter testing');
+      expect(task.completed, originalCompleted);
+      expect(task.id, originalId);
+      expect(task.title, originalTitle);
+    });
   });
 }
